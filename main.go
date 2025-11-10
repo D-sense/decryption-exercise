@@ -2,11 +2,11 @@ package main
 
 import (
 	"crypto/sha256"
+	"decryption-exercise/internals/aes/decrypt"
+	"decryption-exercise/internals/jwt"
 	"encoding/json"
 	"fmt"
 	"go.uber.org/zap"
-	"decryption-exercise/internals/aes/decrypt"
-	"decryption-exercise/internals/jwt"
 )
 
 const (

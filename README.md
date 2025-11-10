@@ -1,4 +1,4 @@
-# Go Software Backend Engineer Coding Exercise
+# Decryption
 
 A Go implementation demonstrating AES decryption, JSON processing, SHA256 hashing, and JWT token creation using HMAC.
 
@@ -22,7 +22,7 @@ This project implements a cryptographic workflow that:
 1. Clone the repository:
 ```bash
 git clone <repository-url>
-cd lloyds-exercise
+cd decryption-exercise
 ```
 
 2. Ensure Go modules are enabled:
