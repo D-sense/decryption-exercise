@@ -5,8 +5,8 @@ import (
 	"encoding/json"
 	"fmt"
 	"go.uber.org/zap"
-	"lloyds-exercise/internals/aes/decrypt"
-	"lloyds-exercise/internals/jwt"
+	"decryption-exercise/internals/aes/decrypt"
+	"decryption-exercise/internals/jwt"
 )
 
 const (

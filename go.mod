@@ -1,4 +1,4 @@
-module lloyds-exercise
+module decryption-exercise
 
 go 1.24
 
