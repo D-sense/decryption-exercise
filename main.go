@@ -4,9 +4,9 @@ import (
 	"crypto/sha256"
 	"encoding/json"
 	"fmt"
+	"go.uber.org/zap"
 	"lloyds-exercise/internals/aes/decrypt"
 	"lloyds-exercise/internals/jwt"
-	"log"
 )
 
 const (
@@ -15,12 +15,21 @@ const (
 )
 
 func main() {
+	// Initialize logger
+	logger, err := zap.NewProduction()
+	if err != nil {
+		panic(fmt.Sprintf("failed to initialize logger: %v", err))
+	}
+	defer logger.Sync()
+
+	logger.Info("Starting decryption process...")
+
 	// Step 1: Decrypt AES encoded text
 	decrypted, err := decrypt.Decrypt(encryptedText, passphrase, decrypt.CBC)
 	if err != nil {
-		log.Fatalf("Decryption failed: %v", err)
+		logger.Fatal("Decryption failed with both modes", zap.Error(err))
 	}
-	log.Printf("Decrypted text: %s", decrypted)
+	logger.Info("Decrypted text", zap.String("decrypted", decrypted))
 
 	// Step 2: Create JSON object
 	jsonData := map[string]string{
@@ -28,21 +37,21 @@ func main() {
 	}
 	jsonBytes, err := json.Marshal(jsonData)
 	if err != nil {
-		log.Fatalf("JSON marshaling failed: %v", err)
+		logger.Fatal("JSON marshaling failed", zap.Error(err))
 	}
 	jsonString := string(jsonBytes)
-	log.Printf("JSON object: %s", jsonString)
+	logger.Info("JSON object", zap.String("json", jsonString))
 
 	// Step 3: Generate SHA256 hash
 	hash := sha256.Sum256(jsonBytes)
 	hashHex := fmt.Sprintf("%x", hash)
-	log.Printf("SHA256 hash: %s", hashHex)
+	logger.Info("SHA256 hash", zap.String("hash", hashHex))
 
 	// Step 3a: Create JWT using HMAC
 	jwtToken, err := jwt.Create(jsonString, passphrase)
 	if err != nil {
-		log.Fatalf("JWT creation failed: %v", err)
+		logger.Fatal("JWT creation failed", zap.Error(err))
 	}
 
-	log.Printf("JWT token: %s", jwtToken)
+	logger.Info("JWT token", zap.String("token", jwtToken))
 }
