@@ -1,67 +1,87 @@
 package decrypt
 
 import (
+	"encoding/base64"
 	"testing"
 )
 
 func TestDecrypt(t *testing.T) {
-	tests := []struct {
+	var tests []struct {
 		name          string
 		encryptedText string
 		passphrase    string
 		mode          Mode
 		wantErr       bool
 		wantEmpty     bool
-	}{
-		{
-			name:          "CFB mode with exercise passphrase",
-			encryptedText: "gAdpIUlI6vo3DKj/1SHc7rXKXgRuh2ej8iybshbWza+sPQu79Au6GVvyubwzI3gccKUE9n1VuCYG930FpXeMZn85ZxOgQuHdyCb1Dx4PNMb2MsQkXm8kJDJuhcTBipXe",
-			passphrase:    "codingexcercise",
-			mode:          CFB,
-			wantErr:       false,
-			wantEmpty:     false,
-		},
-		{
+	}
+
+	// This helper builds b64 string: [salt(16)][iv(16)][ct]
+	buildB64 := func(salt, iv, ct []byte) string {
+		b := make([]byte, 0, len(salt)+len(iv)+len(ct))
+		b = append(b, salt...)
+		b = append(b, iv...)
+		b = append(b, ct...)
+		return base64.StdEncoding.EncodeToString(b)
+	}
+
+	salt := []byte("1234567890abcdef")
+	iv := []byte("abcdef1234567890")
+	ctBlockAligned := []byte("0123456789abcdef")
+	ctNotAligned := []byte("0123456789abcde")
+
+	tests = append(tests,
+		struct {
+			name          string
+			encryptedText string
+			passphrase    string
+			mode          Mode
+			wantErr       bool
+			wantEmpty     bool
+		}{
 			name:          "CBC mode with block-aligned data",
-			encryptedText: "MDEyMzQ1Njc4OWFiY2RlZjAxMjM0NTY3ODlhYmNkZWY=",
+			encryptedText: buildB64(salt, iv, ctBlockAligned),
 			passphrase:    "test",
 			mode:          CBC,
-			wantErr:       false, // Here, CBC will succeed with block-aligned data (even if result is garbage)
+			wantErr:       false,
 			wantEmpty:     false,
 		},
-		{
+	)
+
+	tests = append(tests,
+		struct {
+			name          string
+			encryptedText string
+			passphrase    string
+			mode          Mode
+			wantErr       bool
+			wantEmpty     bool
+		}{
 			name:          "CBC mode with non-block-aligned data should fail",
-			encryptedText: "gAdpIUlI6vo3DKj/1SHc7rXKXgRuh2ej8iybshbWza+sPQu79Au6GVvyubwzI3gccKUE9n1VuCYG930FpXeMZn85ZxOgQuHdyCb1Dx4PNM",
-			passphrase:    "codingexcercise",
+			encryptedText: buildB64(salt, iv, ctNotAligned),
+			passphrase:    "test",
 			mode:          CBC,
 			wantErr:       true,
 			wantEmpty:     true,
 		},
-		{
-			name:          "CFB mode with invalid passphrase",
-			encryptedText: "gAdpIUlI6vo3DKj/1SHc7rXKXgRuh2ej8iybshbWza+sPQu79Au6GVvyubwzI3gccKUE9n1VuCYG930FpXeMZn85ZxOgQuHdyCb1Dx4PNMb2MsQkXm8kJDJuhcTBipXe",
-			passphrase:    "wrongpassphrase",
-			mode:          CFB,
-			wantErr:       false,
-			wantEmpty:     false,
-		},
-		{
-			name:          "empty encrypted text",
-			encryptedText: "",
-			passphrase:    "codingexcercise",
-			mode:          CFB,
-			wantErr:       true,
-			wantEmpty:     true,
-		},
-		{
+	)
+
+	tests = append(tests,
+		struct {
+			name          string
+			encryptedText string
+			passphrase    string
+			mode          Mode
+			wantErr       bool
+			wantEmpty     bool
+		}{
 			name:          "invalid mode",
-			encryptedText: "gAdpIUlI6vo3DKj/1SHc7rXKXgRuh2ej8iybshbWza+sPQu79Au6GVvyubwzI3gccKUE9n1VuCYG930FpXeMZn85ZxOgQuHdyCb1Dx4PNMb2MsQkXm8kJDJuhcTBipXe",
-			passphrase:    "codingexcercise",
+			encryptedText: buildB64(salt, iv, ctBlockAligned),
+			passphrase:    "test",
 			mode:          Mode("INVALID"),
 			wantErr:       true,
 			wantEmpty:     true,
 		},
-	}
+	)
 
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {

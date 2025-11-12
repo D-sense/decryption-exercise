@@ -11,7 +11,8 @@ import (
 
 const (
 	encryptedText = "gAdpIUlI6vo3DKj/1SHc7rXKXgRuh2ej8iybshbWza+sPQu79Au6GVvyubwzI3gccKUE9n1VuCYG930FpXeMZn85ZxOgQuHdyCb1Dx4PNMb2MsQkXm8kJDJuhcTBipXe"
-	passphrase    = "codingexcercise"
+	//encryptedText = "gAdpIUlI6vo3DKj/1SHc7rXKXgRuh2ej8iybshbWza+sPQu79Au6GVvyubwzI3gccKUE9n1VuCYG930FpXeMZn85ZxOgQuHdyCb1Dx4PNMb2MsQkXm8kJDJuhcTBipXe"
+	passphrase = "codingexcercise"
 )
 
 func main() {
