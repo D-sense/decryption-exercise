@@ -89,4 +89,4 @@ For a detailed, step-by-step explanation of how the `decrypt` and `jwt` packages
 - Security considerations
 
 ## AI Assistant Disclaimer
-AI Assistant: Claude Code was used to help improve the README.md file 
+AI Assistant: Claude Code was used to help improve the README.md file, debug and validate that all requirements are met. 
