@@ -10,13 +10,11 @@ import (
 )
 
 const (
-	encryptedText = "gAdpIUlI6vo3DKj/1SHc7rXKXgRuh2ej8iybshbWza+sPQu79Au6GVvyubwzI3gccKUE9n1VuCYG930FpXeMZn85ZxOgQuHdyCb1Dx4PNMb2MsQkXm8kJDJuhcTBipXe"
-	//encryptedText = "gAdpIUlI6vo3DKj/1SHc7rXKXgRuh2ej8iybshbWza+sPQu79Au6GVvyubwzI3gccKUE9n1VuCYG930FpXeMZn85ZxOgQuHdyCb1Dx4PNMb2MsQkXm8kJDJuhcTBipXe"
-	passphrase = "codingexcercise"
+	encryptedText = "4Mjg0w+aI8ZkCOH+zH/mPNXkXxs93dzmER99a42bOP1MMRN7FNE3VgvLLQYD1/qNTEsxlTvgAiWMbT4G2IXzHYZynCHZciFdYP6ucbtlZt8="
+	passphrase    = "codingexercise"
 )
 
 func main() {
-	// Initialize logger
 	logger, err := zap.NewProduction()
 	if err != nil {
 		panic(fmt.Sprintf("failed to initialize logger: %v", err))

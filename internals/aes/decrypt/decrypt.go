@@ -3,10 +3,11 @@ package decrypt
 import (
 	"crypto/aes"
 	"crypto/cipher"
-	"crypto/sha256"
+	"crypto/sha1"
 	"encoding/base64"
 	"fmt"
 	"golang.org/x/crypto/pbkdf2"
+	"strings"
 )
 
 // Mode represents the encryption mode
@@ -24,11 +25,17 @@ const (
 //	salt = ciphertext[:16]
 //	iv = ciphertext[16:32]
 //	ct = ciphertext[32:]
-//	key = PBKDF2(passphrase, salt, dkLen=32, count=100000)  // Uses SHA256 (Python default)
+//	key = PBKDF2(passphrase, salt, dkLen=32, count=100000, 'sha1')
 //	cipher = AES.new(key, AES.MODE_CBC, iv)
 //
 // Padding: PKCS7 (automatically handled by Python's AES.MODE_CBC)
 func Decrypt(encryptedBase64, passphrase string, mode Mode) (string, error) {
+	// Remove all whitespace from input - if any
+	encryptedBase64 = strings.ReplaceAll(encryptedBase64, "\n", "")
+	encryptedBase64 = strings.ReplaceAll(encryptedBase64, "\r", "")
+	encryptedBase64 = strings.ReplaceAll(encryptedBase64, " ", "")
+	encryptedBase64 = strings.ReplaceAll(encryptedBase64, "\t", "")
+
 	// Decode base64 (and consider the need for adding padding)
 	ciphertext, err := base64.StdEncoding.DecodeString(encryptedBase64)
 	if err != nil {
@@ -40,7 +47,7 @@ func Decrypt(encryptedBase64, passphrase string, mode Mode) (string, error) {
 		}
 		ciphertext, err = base64.StdEncoding.DecodeString(encryptedBase64)
 		if err != nil {
-			return "", fmt.Errorf("base64 decode error: %v", err)
+			return "", fmt.Errorf("decoding base64: %v", err)
 		}
 	}
 
@@ -53,12 +60,12 @@ func Decrypt(encryptedBase64, passphrase string, mode Mode) (string, error) {
 	iv := ciphertext[16:32]
 	actualCiphertext := ciphertext[32:]
 
-	key := pbkdf2.Key([]byte(passphrase), salt, 100000, 32, sha256.New)
+	key := pbkdf2.Key([]byte(passphrase), salt, 100000, 32, sha1.New)
 
 	// Create AES cipher block
 	block, err := aes.NewCipher(key)
 	if err != nil {
-		return "", fmt.Errorf("cipher creation error: %v", err)
+		return "", fmt.Errorf("creating cipher: %v", err)
 	}
 
 	// Decrypt based on specified mode
